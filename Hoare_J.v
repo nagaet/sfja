@@ -3899,6 +3899,7 @@ Definition list_reverse_program :=
     Y ::= ACons (AHead (AId X)) (AId Y);
     X ::= ATail (AId X)
   END.
+*)
 
 (* 非形式的証明 
 [[
@@ -3920,6 +3921,7 @@ Definition list_reverse_program :=
 ]]
 *)
 
+(*
 Theorem list_reverse_correct: forall l,
   {{ fun st => aslist (st X) = l  }}
   list_reverse_program
