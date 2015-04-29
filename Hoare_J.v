@@ -3889,95 +3889,6 @@ Proof.
   intros. simpl. apply snoc_equation.
 Qed.
 
-(* FILL IN HERE *)
-
-
-(*
-Definition list_reverse_program :=
-  Y ::= ANil;
-  WHILE BIsCons (AId X) DO
-    Y ::= ACons (AHead (AId X)) (AId Y);
-    X ::= ATail (AId X)
-  END.
-*)
-
-(* 非形式的証明 
-[[
-    {{ X =  l /\ nil = nil }} =>      (1)
-    {{ rev Y :: X = l }}
-  Y ::= ANil;
-    {{ X = l /\ Y = nil }} =>     (2)
-    {{ rev X ++ Y = rev l  }}     (loop invariant)
-  WHILE BIsCons (AId X) DO
-      {{ rev X ++ Y = rev l  /\ (BIsCons X) }} =>      (3) 
-      {{ rev (tail X) ++ ((head X) :: Y) = rev l    }}
-    Y ::= ACons (AHead (AId X)) (AId Y);
-      {{ rev (tail X) ++ Y  = rev l    }}
-    X ::= ATail (AId X)
-      {{ rev X ++ Y  = l    }}
-  END
-     {{ rev X ++ Y  = rev l /\ ~ (BIsCons X) }} =>      (4)
-     {{ Y = rev l }}.
-]]
-*)
-
-(*
-Theorem list_reverse_correct: forall l,
-  {{ fun st => aslist (st X) = l  }}
-  list_reverse_program
-  {{ fun st => aslist (st Y) = rev  l }}. 
-Proof.
-  intros l. unfold list_reverse_program.
-  eapply hoare_consequence_post.      (* (4) *)
-  eapply hoare_consequence_pre.      (* (1) *)  
-  apply hoare_seq with (Q := fun st => aslist (st X) = l /\ aslist (st Y) = nil).      (* (2) *)
-  eapply hoare_consequence_pre.
-  apply hoare_while with (P := fun st => rev (aslist (st X)) ++ aslist (st Y) = rev l).
-  eapply hoare_consequence_pre.      (* (3) *)
-  eapply hoare_seq.
-  apply hoare_asgn.
-  apply hoare_asgn.
-
-  (* (3)の証明 
-      {{ rev X ++ Y = rev l  /\ (BIsCons X) }} => {{ rev (tail X) ++ ((head X) :: Y) = rev l }}  *)
-  unfold assn_sub, bassn, update. simpl.
-  intros st [H1 H2].
-  rewrite <- (rev_equation nat       
-      (*  Lemma rev_equation : forall (A : Type) (h : A) (x y : list A), rev (h :: x) ++ y = rev x ++ h :: y. *)
-  (head (aslist (st X)))                  (* h *)
-  (tail (aslist (st X)))                  (* x *)
-  (aslist (st Y))).                       (* y *)
-  destruct (aslist (st X)).
-    simpl. apply ex_falso_quodlibet. inversion H2.
-    rewrite <- H1. reflexivity.
-
-  (* (2) の証明
-      {{ X = l /\ Y = nil }} => {{ rev X ++ Y = rev l  }}     (loop invariant) *)
-  intros st [H1 H2]. rewrite -> H1. rewrite -> H2. rewrite -> append_nil. reflexivity.
-
-  apply hoare_asgn.
-
-  (* (1) の証明 
-    {{ X =  l /\ nil = nil }} => {{ rev Y :: X = l }}*)
-  intros st H. unfold assn_sub, update. split.
-    remember (beq_id Y X) as Q. destruct Q. 
-      inversion HeqQ.
-      rewrite -> H. reflexivity.
-    simpl. reflexivity.
-
-  (* (4) の証明
-     {{ rev X ++ Y  = rev l /\ ~ (BIsCons X) }} => {{ Y = rev l }}. *)
-  unfold bassn, update.
-  intros st [H1 H2].
-  rewrite <- H1.
-  remember (aslist (st X)) as x'. destruct x'.
-    simpl. reflexivity.
-    apply ex_falso_quodlibet. apply H2. simpl. rewrite <- Heqx'. reflexivity.
-Qed.
-*)
-
-
-
 Definition list_reverse_program :=
   WHILE BIsCons (AId X) DO
     Y ::= ACons (AHead (AId X)) (AId Y);
@@ -3985,6 +3896,7 @@ Definition list_reverse_program :=
   END.
 
 (* 非形式的証明 
+    https://github.com/suharahiromichi/coq/blob/master/sf/coq_sf_hoare.v を参考に
 [[
     {{ X = l /\ Y = nil }} =>     (1)
     {{ rev X ++ Y = rev l  }}     (loop invariant)
